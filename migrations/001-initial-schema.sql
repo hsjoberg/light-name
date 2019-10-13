@@ -1,0 +1,17 @@
+-- Up
+CREATE TABLE `user` (
+	`id`     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`pubKey` INTEGER NOT NULL UNIQUE,
+	`name`   TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE `invoice` (
+	`id`       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`id_user`  INTEGER NOT NULL UNIQUE,
+	`bolt11`   TEXT UNIQUE,
+	FOREIGN KEY(`id_user`) REFERENCES `user`(`id`)
+);
+
+-- Down
+DROP TABLE invoice;
+DROP TABLE user;
