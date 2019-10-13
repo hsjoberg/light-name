@@ -1,4 +1,4 @@
-import Application = require("koa");
+import * as Application from "koa";
 import { InvoiceBech32 } from "../interfaces";
 
 export interface IAddInvoicesRequest {

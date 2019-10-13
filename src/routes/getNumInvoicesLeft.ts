@@ -1,4 +1,4 @@
-import Application = require("koa");
+import * as Application from "koa";
 import { PubKey, Username } from "../interfaces";
 
 export interface IGetNumInvoicesLeftRequest {

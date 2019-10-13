@@ -1,4 +1,5 @@
 import * as Koa from "koa";
+import * as body from "koa-body";
 import * as logger from "koa-logger";
 import * as json from "koa-json";
 import * as sqlite from "sqlite";
@@ -12,6 +13,11 @@ sqlite.open(__dirname + "/../db.sqlite3").then(async (db) => {
   app.context.db = db;
 });
 
+app.use(body({
+  json: true,
+  urlencoded: false, // Disable body queryparam parser
+  text: false, // Disable text parser
+}));
 app.use(json());
 app.use(logger());
 app.use(router.routes()).use(router.allowedMethods());

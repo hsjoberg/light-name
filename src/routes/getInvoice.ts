@@ -1,4 +1,4 @@
-import Application = require("koa");
+import * as Application from "koa";
 import { Username, PubKey, InvoiceBech32 } from "../interfaces";
 import * as sqlite from "sqlite";
 
