@@ -1,12 +1,12 @@
 import * as Application from "koa";
-import { PubKey, Username } from "../interfaces";
+import { Pubkey, Username } from "../interfaces";
 
 export interface IGetNumInvoicesLeftRequest {
-  pubKey: PubKey;
+  pubKey: Pubkey;
 }
 
 export interface IGetNumInvoicesLeftResponse {
-  pubKey: PubKey;
+  pubKey: Pubkey;
   username: Username;
   count: number;
 }

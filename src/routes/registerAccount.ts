@@ -1,6 +1,5 @@
 import * as Application from "koa";
 import { Pubkey, Username, InvoiceBech32 } from "../interfaces";
-import * as sqlite from "sqlite";
 import * as SqlTemplateStrings from "sql-template-strings";
 
 export interface IRegisterAccountRequest {
@@ -56,19 +55,17 @@ const handler: Application.Middleware = async (ctx, next) => {
         }
       }
     }
-    await next();
   }
+  await next();
 };
+
 export default handler;
 
 function verifyRequest(req: any): req is IRegisterAccountRequest {
-  if (
+  return (
     !Array.isArray(req) &&
     typeof req.pubkey === "string" &&
     typeof req.username === "string" &&
     Array.isArray(req.invoices)
-  ) {
-    return true;
-  }
-  return false;
+  );
 }

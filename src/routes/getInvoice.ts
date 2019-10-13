@@ -1,5 +1,5 @@
 import * as Application from "koa";
-import { Username, PubKey, InvoiceBech32 } from "../interfaces";
+import { Username, Pubkey, InvoiceBech32 } from "../interfaces";
 import * as sqlite from "sqlite";
 
 export interface IGetInvoiceRequest {
@@ -7,7 +7,7 @@ export interface IGetInvoiceRequest {
 }
 
 export interface IGetInvoiceResponse {
-  pubkey: PubKey;
+  pubkey: Pubkey;
   username: Username;
   invoice: InvoiceBech32;
 }
