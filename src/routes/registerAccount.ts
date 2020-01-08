@@ -1,6 +1,7 @@
-import * as Application from "koa";
-import { Pubkey, Username, InvoiceBech32 } from "../interfaces";
-import * as SqlTemplateStrings from "sql-template-strings";
+import { RouterMiddleware, RouteParams, BodyType } from "https://deno.land/x/oak/mod.ts";
+import { save } from "https://deno.land/x/sqlite/mod.ts";
+
+import { Pubkey, Username, InvoiceBech32, IApplicationState } from "../interfaces/index.ts";
 
 export interface IRegisterAccountRequest {
   pubkey: Pubkey;
@@ -16,39 +17,49 @@ export interface IRegisterAccountResponse {
 /**
  * Registers a new username to the database
  *
- * @todo Figure out how to extend ctx interface
  * @example curl -H "Content-type: application/json" -d '{ "pubkey" : "test", "username": "test", "invoices": []}' 'http://localhost:3000/registerAccount'
  * @returns IRegisterAccountResponse
  */
-const handler: Application.Middleware = async (ctx, next) => {
-  const db = ctx.db;
-  const request = ctx.request.body;
+const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context, next) => {
+  const db = context.state.db;
+  const body = await context.request.body();
 
+  if (body.type !== BodyType.JSON) {
+    context.response.status = 400;
+    context.response.body = {
+      status: "ERROR",
+      error: `Body data is not valid JSON`
+    };
+    return;
+  }
+  const request = body.value;
   if (!verifyRequest(request)) {
-    ctx.status = 400;
-    ctx.body = { status: "ERROR", error: "Invalid parameters" };
+    context.response.status = 400;
+    context.response.body = { status: "ERROR", error: "Invalid parameters" };
   }
   else {
     try {
-      await db.run(SqlTemplateStrings.SQL`
+      await db.query(`
         INSERT INTO user
         (pubkey, name)
         VALUES
-        (${request.pubkey}, ${request.username});
-      `);
-      ctx.body = { status: "OK" };
-
+        (?, ?)`,
+        request.pubkey, request.username
+      );
+      save(db);
+      context.response.body = { status: "OK" };
     } catch (e) {
-      if (e.code === "SQLITE_CONSTRAINT") {
-        ctx.status = 400;
-        if (e.message.search("name") !== -1) {
-          ctx.body = {
+      // TODO fix `code` prop in Error object upstream in Deno sqlite project
+      if (e.message.startsWith("sqlite error: UNIQUE constraint failed")) {
+        context.response.status = 400;
+        if (e.message.search("user.name") !== -1) {
+          context.response.body = {
             status: "ERROR",
             error: `Username ${request.username} already registered`
           };
         }
         else {
-          ctx.body = {
+          context.response.body = {
             status: "ERROR",
             error: `Pubkey ${request.pubkey} already registered`
           };

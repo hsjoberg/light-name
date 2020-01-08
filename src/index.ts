@@ -1,26 +1,22 @@
-import * as Koa from "koa";
-import * as body from "koa-body";
-import * as logger from "koa-logger";
-import * as json from "koa-json";
-import * as sqlite from "sqlite";
+import { Application } from "https://deno.land/x/oak/mod.ts";
+import { open } from "https://deno.land/x/sqlite/mod.ts";
 
-import router from "./routes";
+import router from "./routes/index.ts";
+import { IApplicationState } from "./interfaces/index.ts";
 
-const app = new Koa();
-console.log(__dirname);
-sqlite.open(__dirname + "/../db.sqlite3").then(async (db) => {
-  await db.migrate({ force: "last" });
-  app.context.db = db;
+const app = new Application<IApplicationState>();
+const db = await open("./db.sqlite3");
+app.state.db = db;
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.use((context) => {
+  if (context.response.body === undefined) {
+    context.response.status = 404;
+    context.response.body = "404";
+  }
 });
 
-app.use(body({
-  json: true,
-  urlencoded: false, // Disable body queryparam parser
-  text: false, // Disable text parser
-}));
-app.use(json());
-app.use(logger());
-app.use(router.routes()).use(router.allowedMethods());
-app.listen(3000, () => {
-  console.log("Koa started 🎉");
-});
+console.log("Starting lightning-name server on port 3000 🎉");
+await app.listen("127.0.0.1:3000");

@@ -1,6 +1,6 @@
-import * as Application from "koa";
-import { Username, Pubkey, InvoiceBech32 } from "../interfaces";
-import * as sqlite from "sqlite";
+import { RouterMiddleware, RouteParams } from "https://deno.land/x/oak/mod.ts";
+
+import { InvoiceBech32, IApplicationState, Username, Pubkey } from "../interfaces/index.ts";
 
 export interface IGetInvoiceRequest {
   username: Username;
@@ -12,9 +12,9 @@ export interface IGetInvoiceResponse {
   invoice: InvoiceBech32;
 }
 
-const handler: Application.Middleware = async (ctx, next) => {
-  const db: sqlite.Database = ctx.db;
-  ctx.body = { msg: "getInvoice" };
+const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context, next) => {
+  context.response.body = { msg: "getInvoice" };
   await next();
 };
+
 export default handler;
