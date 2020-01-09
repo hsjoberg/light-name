@@ -11,7 +11,7 @@ app.state.db = db;
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.use((context) => {
+app.use(context => {
   if (context.response.body === undefined) {
     context.response.status = 404;
     context.response.body = "404";

@@ -10,7 +10,10 @@ export interface IAddInvoicesResponse {
   count: number;
 }
 
-const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context, next) => {
+const handler: RouterMiddleware<RouteParams, IApplicationState> = async (
+  context,
+  next
+) => {
   context.response.body = { msg: "addInvoices" };
   await next();
 };

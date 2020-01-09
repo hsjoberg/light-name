@@ -12,7 +12,10 @@ export interface IGetNumInvoicesLeftResponse {
   count: number;
 }
 
-const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context, next) => {
+const handler: RouterMiddleware<RouteParams, IApplicationState> = async (
+  context,
+  next
+) => {
   context.response.body = { msg: "getInvoicesLeft" };
   await next();
 };

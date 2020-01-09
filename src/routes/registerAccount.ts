@@ -1,7 +1,16 @@
-import { RouterMiddleware, RouteParams, BodyType } from "https://deno.land/x/oak/mod.ts";
+import {
+  RouterMiddleware,
+  RouteParams,
+  BodyType
+} from "https://deno.land/x/oak/mod.ts";
 import { save } from "https://deno.land/x/sqlite/mod.ts";
 
-import { Pubkey, Username, InvoiceBech32, IApplicationState } from "../interfaces/index.ts";
+import {
+  Pubkey,
+  Username,
+  InvoiceBech32,
+  IApplicationState
+} from "../interfaces/index.ts";
 
 export interface IRegisterAccountRequest {
   pubkey: Pubkey;
@@ -10,7 +19,7 @@ export interface IRegisterAccountRequest {
 }
 
 export interface IRegisterAccountResponse {
-  status: "OK" | "ERROR",
+  status: "OK" | "ERROR";
   error?: string;
 }
 
@@ -20,7 +29,10 @@ export interface IRegisterAccountResponse {
  * @example curl -H "Content-type: application/json" -d '{ "pubkey" : "test", "username": "test", "invoices": []}' 'http://localhost:3000/registerAccount'
  * @returns IRegisterAccountResponse
  */
-const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context, next) => {
+const handler: RouterMiddleware<RouteParams, IApplicationState> = async (
+  context,
+  next
+) => {
   const db = context.state.db;
   const body = await context.request.body();
 
@@ -36,15 +48,15 @@ const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context
   if (!verifyRequest(request)) {
     context.response.status = 400;
     context.response.body = { status: "ERROR", error: "Invalid parameters" };
-  }
-  else {
+  } else {
     try {
-      await db.query(`
-        INSERT INTO user
+      await db.query(
+        `INSERT INTO user
         (pubkey, name)
         VALUES
         (?, ?)`,
-        request.pubkey, request.username
+        request.pubkey,
+        request.username
       );
       save(db);
       context.response.body = { status: "OK" };
@@ -57,8 +69,7 @@ const handler: RouterMiddleware<RouteParams, IApplicationState> = async (context
             status: "ERROR",
             error: `Username ${request.username} already registered`
           };
-        }
-        else {
+        } else {
           context.response.body = {
             status: "ERROR",
             error: `Pubkey ${request.pubkey} already registered`
