@@ -5,7 +5,6 @@ import getInvoice from "./getInvoice.ts";
 import getNumInvoicesLeft from "./getNumInvoicesLeft.ts";
 import addInvoices from "./addInvoices.ts";
 
-
 const router = new Router();
 // TODO fix type error
 router
