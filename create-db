@@ -1,1 +1,1 @@
-deno --allow-read --allow-write tools/create-db.ts
+deno run --allow-read --allow-write tools/create-db.ts
